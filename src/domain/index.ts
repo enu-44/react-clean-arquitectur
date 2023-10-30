@@ -1,8 +1,8 @@
 //Models
-export * from './models/user-response.dom'
+export * from '@domain/models/user-response.dom'
 
 //Repositories
-export * from './repository/user.repository'
+export * from '@domain/repository/user.repository'
 
 //Symbols
-export * from './symbols/user.symbols'
+export * from '@domain/symbols/user.symbols'

@@ -1,5 +1,5 @@
-import { UserResponseDom } from "../../domain/models/user-response.dom";
-import { UserDto } from "../dtos/user.dto";
+import { UserResponseDom } from "@domain/index";
+import { UserDto } from "@infrastructure/dtos/user.dto";
 
 export class UserMapper {
     static toDom(dto: UserDto): UserResponseDom {

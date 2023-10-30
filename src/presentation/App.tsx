@@ -1,29 +1,13 @@
-import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import { USER_SYMBOLS, UserResponseDom } from '../domain';
-import { AllUsersUseCase } from '../application';
-import { di } from '../di/app.container';
-import { Failure, NoParams } from '../core';
+import { useUser } from './hooks/use-user';
 
 function App() {
-  const allUsersUseCase = di.get<AllUsersUseCase>(USER_SYMBOLS.USER_LIST);
-  const [userData, setUserData] = useState<UserResponseDom[]>([]); 
-  const [loading, setLoading] = useState<boolean>(true); 
-  const [error, setError] = useState<boolean>(false); 
-
-  useEffect(() => {
-    async function fetchData() {
-      const resultData = await allUsersUseCase.execute(NoParams)
-      resultData.fold((data: UserResponseDom[]) => {
-        setUserData(data)
-      }, (_: Failure) => setError(true))
-      setLoading(false)
-    }
-    fetchData()
-  },[allUsersUseCase])
-
+  const {
+    users,
+    loading,
+    error } = useUser();
   return (
     <>
       <div>
@@ -38,15 +22,14 @@ function App() {
       <div className="card">
         {loading && <p>Cargando datos del usuario...</p>}
         {error && <p>Ocurrio un error</p>}
-        {userData && (
+        {users && (
           <div>
             <h2>Datos del Usuario:</h2>
-            <pre>{JSON.stringify(userData, null, 2)}</pre>
+            <pre>{JSON.stringify(users, null, 2)}</pre>
           </div>
         )}
       </div>
     </>
   )
 }
-
 export default App

@@ -1,12 +1,7 @@
 
-import { UserResponseDom } from "../../domain/models/user-response.dom";
-import { Failure } from "../../core/failure/failure";
-import { Result } from "../../core/result/result";
-import { NoParams, Query } from "../../core/usecase/query";
-import type { UserRepository } from "../../domain/repository/user.repository";
 import { inject, injectable } from "inversify";
-import { USER_SYMBOLS } from "../../domain/symbols/user.symbols";
-
+import  { Failure, NoParams, Query, Result } from "@core/index";
+import {  USER_SYMBOLS, type UserRepository, UserResponseDom } from "@domain/index";
 @injectable()
 export class AllUsersUseCase extends Query<Promise<Result<UserResponseDom[], Failure>>,NoParams > {
     constructor(
@@ -15,6 +10,5 @@ export class AllUsersUseCase extends Query<Promise<Result<UserResponseDom[], Fai
     ) {
         super()
     }
-
     execute = (_: NoParams): Promise<Result<UserResponseDom[], Failure>> => this._userRepository.list()
 }

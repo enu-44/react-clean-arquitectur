@@ -1,1 +1,1 @@
-export * from './queries/all-users.usecase'
+export * from '@application/queries/all-users.usecase'

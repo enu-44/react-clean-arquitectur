@@ -1,14 +1,11 @@
 import { Container } from "inversify";
-import { userModule } from "../infraestructure/user.module";
-import { RequestInterceptor } from "../core/infraestructure/interceptor/request-interceptor";
+import { userModule } from "@infrastructure/index";
+import { httpClientModule } from "@core/index";
 
-// Crear un nuevo contenedor de Inversify
+// Crear contenedor de Inversify
 const di = new Container();
-di.bind<RequestInterceptor>(RequestInterceptor)
-.to(RequestInterceptor)
-    .inSingletonScope()
-
+//Transversales
+di.load(httpClientModule)
 // Cargar módulos en el contenedor
 di.load(userModule);
-
 export { di };
