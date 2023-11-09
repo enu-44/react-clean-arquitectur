@@ -6,3 +6,4 @@ export abstract class Query<Result = void, Params=void> extends UseCase<Result, 
 }
 
 export abstract class NoParams{}
+export abstract class NoResult{}

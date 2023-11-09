@@ -3,6 +3,7 @@ import {
   HttpClient,
   HttpClientOptions,
   type DefaultHeadersProvider,
+  HttpClientResponse,
 } from "@core/index";
 
 @injectable()
@@ -11,27 +12,28 @@ export class FetchHttpClient implements HttpClient {
     @inject("Headers")
     private readonly defaultHeaders: DefaultHeadersProvider
   ) {}
+ 
 
-  get<Result = void>(options: HttpClientOptions): Promise<Result> {
+  get<Result = void>(options: HttpClientOptions): Promise<HttpClientResponse<Result>> {
     let request = <RequestInit>{
       method: "GET",
       headers: this.mergeHeaders(options),
     };
     return new Promise((resolve, reject) => {
-      fetch(options.url, request)
+      fetch(options.path, request)
         .then((response: Response) => {
           if (!response.ok) {
             reject(response);
             return;
           }
-          return response.json();
+          return this.result<Result>(response)
         })
-        .then((data: Result) => resolve(data))
+        .then((data) => resolve(data!))
         .catch((error: any) => reject(error));
     });
   }
 
-  async post<Result = void>(options: HttpClientOptions): Promise<Result> {
+  post<Result = void>(options: HttpClientOptions): Promise<HttpClientResponse<Result>> {
     let body = options.body;
     if (body instanceof Object) {
       body = JSON.stringify(options.body);
@@ -42,17 +44,68 @@ export class FetchHttpClient implements HttpClient {
       headers: this.mergeHeaders(options),
     };
     return new Promise((resolve, reject) => {
-      fetch(options.url, request)
+      fetch(options.path, request)
         .then((response: Response) => {
           if (!response.ok) {
             reject(response);
             return;
           }
-          return response.json();
+          return this.result<Result>(response)
         })
-        .then((data: Result) => resolve(data))
+        .then((data) => resolve(data!))
         .catch((error: any) => reject(error));
     });
+  }
+
+  put<Result = void>(options: HttpClientOptions): Promise<HttpClientResponse<Result>> {
+    let body = options.body;
+    if (body instanceof Object) {
+      body = JSON.stringify(options.body);
+    }
+    let request = <RequestInit>{
+      method: "PUT",
+      body: body,
+      headers: this.mergeHeaders(options),
+    };
+    return new Promise((resolve, reject) => {
+      fetch(options.path, request)
+        .then((response: Response) => {
+          if (!response.ok) {
+            reject(response);
+            return;
+          }
+          return this.result<Result>(response)
+        })
+        .then((data) => resolve(data!))
+        .catch((error: any) => reject(error));
+    });
+  }
+
+  delete<Result = void>(options: HttpClientOptions): Promise<HttpClientResponse<Result>> {
+    let request = <RequestInit>{
+      method: "DELETE",
+      headers: this.mergeHeaders(options),
+    };
+    return new Promise((resolve, reject) => {
+      fetch(options.path, request)
+        .then((response: Response) => {
+          if (!response.ok) {
+            reject(response);
+            return;
+          }
+          return this.result<Result>(response)
+        })
+        .then((data) => resolve(data!))
+        .catch((error: any) => reject(error));
+    });
+  }
+
+  async result<Result>(response: Response): Promise<HttpClientResponse<Result>> {
+    return <HttpClientResponse<Result>>{
+      data: response.status !== 204 ? await response.json(): null,
+      status: response.status,
+      statusText: response.statusText,
+    }
   }
 
   private mergeHeaders(options: HttpClientOptions): Record<string, string> {

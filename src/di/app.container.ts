@@ -1,5 +1,5 @@
 import { Container } from "inversify";
-import { userModule } from "@infrastructure/index";
+import { userModule } from "@infrastructure/users/index";
 import { httpClientModule } from "@core/index";
 
 // Crear contenedor de Inversify
