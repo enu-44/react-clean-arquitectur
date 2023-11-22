@@ -1,34 +1,49 @@
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import { useUser } from './hooks/use-user';
-
+import { useTask } from './hooks/use-task';
+import { ItemLoadingComponent } from '@presentation/components/base/loading/ItemLoadingComponent'
+import { EmptyComponent } from '@presentation/components/base/EmptyComponent'
+import { FlatButtonComponent } from '@presentation/components/base/buttons/FloatingButtonComponent'
+import { ModalComponent } from '@presentation/components/base/ModalComponent'
+import { TaskForm } from '@presentation/components/task/TaskForm'
+import { TaskSearch } from '@presentation/components/task/TaskSearch'
+import { TaskList } from '@presentation/components/task/TaskList'
+import { CreateTaskRequestDom, TaskDom } from '@domain/tasks'
 function App() {
   const {
-    users,
+    tasks,
     loading,
-    error } = useUser();
+    openModal,
+    error,
+    completeTask,
+    allTasks,
+    searchTasks,
+    deleteTask,
+    addTask,
+    setOpenModal } = useTask();
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        {loading && <p>Cargando datos del usuario...</p>}
-        {error && <p>Ocurrio un error</p>}
-        {users && (
-          <div>
-            <h2>Datos del Usuario:</h2>
-            <pre>{JSON.stringify(users, null, 2)}</pre>
-          </div>
-        )}
-      </div>
+      <h1>Lista de tareas</h1>
+      <TaskSearch onChange={(query: string) => query ? searchTasks(query): allTasks()} />
+      {loading && (
+        <>
+          <ItemLoadingComponent />
+          <ItemLoadingComponent />
+          <ItemLoadingComponent />
+        </>
+      )}
+      {(!loading && tasks.length === 0) && <EmptyComponent />}
+      <TaskList
+        items={tasks}
+        onDelete={(_: TaskDom) => deleteTask(_.id)}
+        onComplete={(_: TaskDom) => completeTask(_.id)} />
+      <FlatButtonComponent label='+' onClick={() => setOpenModal(state => !state)} />
+      {openModal && (
+        <ModalComponent>
+          <TaskForm onAdd={(request: CreateTaskRequestDom) => {
+            addTask(request)
+            setOpenModal(false)
+          }} onCancel={() => setOpenModal(false)}/>
+        </ModalComponent>
+      )}
     </>
   )
 }

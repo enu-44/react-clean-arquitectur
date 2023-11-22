@@ -1,13 +1,13 @@
 import { inject, injectable } from "inversify";
-import { UserDto } from "./dtos/user.dto";
-import { UserMapper } from "./mapper/user.mapper";
-import { UserRepository, UserDom } from "../../domain/users";
 import { Failure, HTTP_CLIENT_SYMBOLS, type HttpClient, HttpClientOptions, UnknowFailure, Result, Right, Left, NoResult } from "@core/index";
 import { CreateUserRequestDom, UpdateUserRequestDom } from "@domain/users/models/user-request.dom";
+import { UserDom, UserRepository } from "@domain/users";
+import { UserMapper } from "./mapper/user.mapper";
+import { UserDto } from "./dtos/user.dto";
 
 @injectable()
 export class UserImplRepository implements UserRepository {
-    baseURL: any = import.meta.env.VITE_BASE_URL
+    baseURL: any = "https://jsonplaceholder.typicode.com"
     constructor(
         @inject(HTTP_CLIENT_SYMBOLS.FETCH)
         private readonly httpClient: HttpClient,

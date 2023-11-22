@@ -13,8 +13,9 @@
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "types": [ "@types/node", "reflect-metadata"],
-    "module": "ESNext",
+    "module": "esnext",
     "skipLibCheck": true,
+    "esModuleInterop": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",

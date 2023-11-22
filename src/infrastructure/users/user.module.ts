@@ -1,5 +1,5 @@
-import "reflect-metadata";
 import { ContainerModule } from "inversify";
+import "reflect-metadata";
 import { UserImplRepository } from "./user-impl.repository";
 import { AllUsersUseCase } from "../../application/users/queries/all-users.usecase";
 import { USER_SYMBOLS, UserRepository } from "../../domain/users";

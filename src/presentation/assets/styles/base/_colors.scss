@@ -1,0 +1,114 @@
+@import "../base/variables";
+
+$white-color: (
+  "base": $white
+);
+$black-color: (
+  "base": $black
+);
+$primary-color: (
+  "lighten-4": #EFDEFF,
+  "lighten-3": #DCBDFF,
+  "lighten-2": #C89CFF,
+  "lighten-1": #B583FF,
+  "base": $primary,
+  "darken-1": #7441DB,
+  "darken-2": #562DB7,
+  "darken-3": #3B1C93,
+  "darken-4": #28117A
+);
+$secondary-color: (
+  "lighten-4": #EAF0F9,
+  "lighten-3": #D6E1F3,
+  "lighten-2": #B5C3DB,
+  "lighten-1": #8F9DB8,
+  "base": $secondary,
+  "darken-1": #465375,
+  "darken-2": #303C62,
+  "darken-3": #1E294F,
+  "darken-4": #121A41
+);
+$success-color: (
+  "lighten-4": #E0FBDA,
+  "lighten-3": #BDF8B6,
+  "lighten-2": #8EEC8D,
+  "lighten-1": #6CD975,
+  "base": $success,
+  "darken-1": #2EA54F,
+  "darken-2": #208A47,
+  "darken-3": #146F3E,
+  "darken-4": #0C5C38
+);
+$danger-color: (
+  "lighten-4": #FEE8DC,
+  "lighten-3": #FECBBA,
+  "lighten-2": #FCA897,
+  "lighten-1": #F9877C,
+  "base": $danger,
+  "darken-1": #D23B48,
+  "darken-2": #B02940,
+  "darken-3": #8E1A38,
+  "darken-4": #750F33
+);
+$warning-color: (
+  "lighten-4": #FEEFD0,
+  "lighten-3": #FEDBA1,
+  "lighten-2": #FCC173,
+  "lighten-1": #FAA750,
+  "base": $warning,
+  "darken-1": #D46010,
+  "darken-2": #B1460B,
+  "darken-3": #8F2F07,
+  "darken-4": #762004
+);
+
+$info-color: (
+  "lighten-4": #D5F1FD,
+  "lighten-3": #ACE0FC,
+  "lighten-2": #81C8F7,
+  "lighten-1": #60AFF0,
+  "base": $info,
+  "darken-1": #226CC5,
+  "darken-2": #1750A5,
+  "darken-3": #0E3885,
+  "darken-4": #09276E
+);
+
+$grey-color: (
+  "lighten-4": #f5f5f5,
+  "lighten-3": #eee,
+  "lighten-2": #e0e0e0,
+  "lighten-1": #bdbdbd,
+  "base": $grey,
+  "darken-1": #757575,
+  "darken-2": #616161,
+  "darken-3": #424242,
+  "darken-4": #212121
+);
+
+$light-color: (
+  "base": $light
+);
+$dark-color: (
+  "base": $dark
+);
+
+$shades: (
+  "black": $black,
+  "white": $white,
+  "transparent": transparent
+);
+
+$colors: (
+  "white": $white-color,
+  "black": $black-color,
+  "primary": $primary-color,
+  "secondary": $secondary-color,
+  "success": $success-color,
+  "danger": $danger-color,
+  "warning": $warning-color,
+  "info": $info-color,
+  "light": $light-color,
+  "dark": $dark-color,
+  "grey": $grey-color
+);

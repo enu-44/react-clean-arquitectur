@@ -1,25 +1,34 @@
 
+import { UserDom, UserRepository } from '@domain/users';
+import { test, describe, beforeEach } from '@jest/globals'
+import { MockProxy, mock } from 'jest-mock-extended';
+import { Failure, Left, NoParams, Right } from '@core/index';
 import { AllUsersUseCase } from '@application/users';
-import { test, describe, beforeEach, jest } from '@jest/globals'
-import { Container } from 'inversify';
 
 describe('All users usecase', () => {
-    let container: Container;
-    let allUsersUseCase: AllUsersUseCase;
-    beforeEach(() => {
-        container = new Container();
-        // Configura tus dependencias, en este caso UserRepository
-       // container.bind<UserRepository>(USER_SYMBOLS.USER_REPOSITORY).toConstantValue({
-          //list: jest.fn(), // Mockear el método list
-        //});
-        allUsersUseCase = container.get(AllUsersUseCase);
-    });
+  let userRepositoryMock: MockProxy<UserRepository>; 
+  beforeEach(() => {
+    userRepositoryMock = mock<UserRepository>();
+  });
     
-    test('when should return a successful', async () => {
-        // Arranque
-  
-        // Act
+  test('when should return all users successful', async () => {
+    // Prepare
+    userRepositoryMock.list.mockReturnValue(Promise.resolve(new Right<UserDom[]>([])));
+    const allUsersUseCase = new AllUsersUseCase(userRepositoryMock);
+    // Execute
+    const result = await allUsersUseCase.execute(NoParams);
+    // Assert
+    expect(result.isRight()).toBe(true);
+    expect(result.value).toEqual([]);
+  });
 
-        // Assert
-      });
+  test('when should return a failure', async () => {
+    // Prepare
+    userRepositoryMock.list.mockReturnValue(Promise.resolve(new Left<Failure>(new Failure("error"))));
+    const allUsersUseCase = new AllUsersUseCase(userRepositoryMock);
+    // Execute
+    const result = await allUsersUseCase.execute(NoParams);
+    // Assert
+    expect(result.isLeft()).toBe(true);
+  });
 })
