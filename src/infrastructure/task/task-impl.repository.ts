@@ -19,7 +19,6 @@ export class TaskImplRepository implements TaskRepository {
         const index = data.findIndex(task => task.id === id);
         if (index !== -1) data[index].complete = true;
         localStorage.setItem(this.keyTask, JSON.stringify(data))
-        await this.sleep(2000);
         return new Right(NoResult)
     }
     async search(query: String): Promise<Result<TaskDom[], Failure>> {
@@ -28,7 +27,7 @@ export class TaskImplRepository implements TaskRepository {
         return new Right(listaFiltrada.map(TaskMapper.toDom))
     }
     async list(): Promise<Result<TaskDom[], Failure>> {
-        await this.sleep(2000);
+        await this.sleep(1000);
         return new Right(this.items.map(TaskMapper.toDom))
     }
     async create(request: CreateTaskRequestDom): Promise<Result<TaskDom, Failure>> {
@@ -36,7 +35,7 @@ export class TaskImplRepository implements TaskRepository {
         let dto = TaskMapper.toDto(request)
         let list = [...data,dto]
         localStorage.setItem(this.keyTask, JSON.stringify(list))
-        await this.sleep(2000);
+        await this.sleep(500);
         return new Right(new TaskDom(dto.id, dto.name, dto.complete))
     }
     async deleteById(id: number): Promise<Result<NoResult, Failure>> {

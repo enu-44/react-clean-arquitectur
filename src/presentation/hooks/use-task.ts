@@ -38,13 +38,11 @@ function useTask() {
     };
 
     const completeTask = async (id: number) => {
-        setLoading(true)
         const result = await completeTaskssUseCase.execute(id)
         result.fold((_: NoResult) => allTasks(), (_: Failure) => setError(true))
     };
     
     const deleteTask = async (id: number) => {
-        setLoading(true)
         const result = await deleteTaskssUseCase.execute(id)
         result.fold((_: NoResult) => allTasks(), (_: Failure) => setError(true))
     };
