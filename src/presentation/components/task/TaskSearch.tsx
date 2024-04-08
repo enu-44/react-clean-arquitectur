@@ -1,11 +1,15 @@
-import { InputComponent } from '@presentation/components/base/InputComponent';
 interface TaskSearchProps {
     onChange: (query: string) => void;
 }
-export function TaskSearch({ onChange }: TaskSearchProps) {
+const TaskSearch = ({ onChange }: Readonly<TaskSearchProps>) => {
     return (
-        <>
-            <InputComponent placeholder='Buscar tarea...' onChange={onChange}/>
-        </>
-    )
+        <div>
+                <input
+                type="text"
+                placeholder="Buscar tarea..."
+                    onChange={(event) => onChange ? onChange(event.target.value) : null}
+                />
+        </div>
+    );
 }
+export default TaskSearch

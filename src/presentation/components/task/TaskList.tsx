@@ -1,22 +1,24 @@
 import { TaskDom } from "@domain/tasks";
-import { ItemListComponent } from '@presentation/components/base/ItemListComponent'
+import CheckIcon from "@presentation/assets/icons/CheckIcon";
+import DeleteIcon from "@presentation/assets/icons/DeleteIcon";
 interface TaskListProps {
     items: TaskDom[];
     onComplete: (task: TaskDom) => void;
     onDelete: (task: TaskDom) => void;
 }
-export function TaskList({ items = [], onComplete, onDelete }: TaskListProps) {
+const TaskList = ({ items = [], onComplete, onDelete }: Readonly<TaskListProps>) => {
     return (
         <>
             {items.map(task => (
-                <ItemListComponent
-                    key={task.id}
-                    text={task.name}
-                    completed={task.completed}
-                    onComplete={() =>  onComplete(task)}
-                    onDelete={() => onDelete(task)}
-                />
+                <li key={task.id} className="item-list bg-white">
+                    <CheckIcon className="icon-button" width="38" height="38" fill={task.completed ? 'green' : 'gray'} onClick={() => onComplete(task)} />
+                    <p className={`item-list-p  ${task.completed ? "item-list-p--complete" : ""} `}>
+                        {task.name}
+                    </p>
+                    <DeleteIcon className="icon-button" width="38" height="38" onClick={() => onDelete(task)} />
+                </li>
             ))}
         </>
     )
 }
+export default TaskList

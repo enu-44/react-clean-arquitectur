@@ -5,7 +5,6 @@ import {
   type DefaultHeadersProvider,
   HttpClientResponse,
 } from "@core/index";
-
 @injectable()
 export class FetchHttpClient implements HttpClient {
   constructor(
@@ -13,27 +12,15 @@ export class FetchHttpClient implements HttpClient {
     private readonly defaultHeaders: DefaultHeadersProvider
   ) {}
  
-
-  get<Result = void>(options: HttpClientOptions): Promise<HttpClientResponse<Result>> {
+  get<Result = void, Error = void>(options: HttpClientOptions): Promise<HttpClientResponse<Result, Error>> {
     let request = <RequestInit>{
       method: "GET",
       headers: this.mergeHeaders(options),
     };
-    return new Promise((resolve, reject) => {
-      fetch(options.path, request)
-        .then((response: Response) => {
-          if (!response.ok) {
-            reject(response);
-            return;
-          }
-          return this.result<Result>(response)
-        })
-        .then((data) => resolve(data!))
-        .catch((error: any) => reject(error));
-    });
+    return this.fetchRequest(options, request)
   }
-
-  post<Result = void>(options: HttpClientOptions): Promise<HttpClientResponse<Result>> {
+ 
+  post<Result = void, Error = void>(options: HttpClientOptions): Promise<HttpClientResponse<Result, Error>> {
     let body = options.body;
     if (body instanceof Object) {
       body = JSON.stringify(options.body);
@@ -43,21 +30,10 @@ export class FetchHttpClient implements HttpClient {
       body: body,
       headers: this.mergeHeaders(options),
     };
-    return new Promise((resolve, reject) => {
-      fetch(options.path, request)
-        .then((response: Response) => {
-          if (!response.ok) {
-            reject(response);
-            return;
-          }
-          return this.result<Result>(response)
-        })
-        .then((data) => resolve(data!))
-        .catch((error: any) => reject(error));
-    });
+    return this.fetchRequest(options, request)
   }
-
-  put<Result = void>(options: HttpClientOptions): Promise<HttpClientResponse<Result>> {
+ 
+  put<Result = void, Error = void>(options: HttpClientOptions): Promise<HttpClientResponse<Result, Error>> {
     let body = options.body;
     if (body instanceof Object) {
       body = JSON.stringify(options.body);
@@ -67,48 +43,64 @@ export class FetchHttpClient implements HttpClient {
       body: body,
       headers: this.mergeHeaders(options),
     };
-    return new Promise((resolve, reject) => {
-      fetch(options.path, request)
-        .then((response: Response) => {
-          if (!response.ok) {
-            reject(response);
-            return;
-          }
-          return this.result<Result>(response)
-        })
-        .then((data) => resolve(data!))
-        .catch((error: any) => reject(error));
-    });
+    return this.fetchRequest(options, request)
   }
-
-  delete<Result = void>(options: HttpClientOptions): Promise<HttpClientResponse<Result>> {
-    let request = <RequestInit>{
+ 
+  delete<Result = void, Error = void>(options: HttpClientOptions): Promise<HttpClientResponse<Result, Error>> {
+    const request = <RequestInit>{
       method: "DELETE",
       headers: this.mergeHeaders(options),
     };
-    return new Promise((resolve, reject) => {
+    return this.fetchRequest(options, request)
+  }
+ 
+  fetchRequest<Result = void, Error = void>(options: HttpClientOptions, request:RequestInit ): Promise<HttpClientResponse<Result, Error>> {
+    return new Promise((resolve, _) => {
       fetch(options.path, request)
-        .then((response: Response) => {
-          if (!response.ok) {
-            reject(response);
-            return;
-          }
-          return this.result<Result>(response)
-        })
-        .then((data) => resolve(data!))
-        .catch((error: any) => reject(error));
+        .then((response: Response) => this.result<Result, Error>(options, response))
+        .then((data) => resolve(data))
+        .catch((error) => resolve(this.catchResolve(error)));
     });
   }
-
-  async result<Result>(response: Response): Promise<HttpClientResponse<Result>> {
-    return <HttpClientResponse<Result>>{
-      data: response.status !== 204 ? await response.json(): null,
+ 
+  async getData(options: HttpClientOptions, response: Response): Promise<any>{
+    const responseType = options.responseType ?? "json";
+    const responseHandlers = {
+      "json": () => response.json().catch(()=> (null)),
+      "text": () => response.text().catch(()=> (null)),
+      "blob": () => response.blob().catch(()=> (null)),
+      "arrayBuffer": () => response.arrayBuffer().catch(()=> (null)),
+    }
+    const handler = responseHandlers[responseType];
+    if(!handler) throw new Error(`Content type not supported: ${options.responseType}`)
+    return handler()
+  }
+ 
+  async result<Result, Error>(options: HttpClientOptions, response: Response): Promise<HttpClientResponse<Result, Error>> {
+    const headers:Record<string, string> = {}
+    response?.headers?.forEach((value:string, key:string)=>{
+      headers[key] = value;
+    })
+    const data = await this.getData(options, response);
+    return <HttpClientResponse<Result, Error>>{
+      data:  response.ok ?  data : null,
+      error: !response.ok ?  data : null,
       status: response.status,
+      headers: headers,
       statusText: response.statusText,
+      ok: response.ok
     }
   }
-
-  private mergeHeaders(options: HttpClientOptions): Record<string, string> {
+ 
+  async catchResolve<Result, Error>(error: any): Promise<HttpClientResponse<Result, Error>> {
+    return <HttpClientResponse<Result, Error>>{
+     ok: false,
+     error: error,
+     data: null
+    }
+  }
+ 
+  mergeHeaders(options: HttpClientOptions): Record<string, string> {
     const defaultHeaders = this.defaultHeaders.getHeaders();
     const mergedHeaders = { ...defaultHeaders, ...options.headers };
     if (options.removeDefaultHeaders) {

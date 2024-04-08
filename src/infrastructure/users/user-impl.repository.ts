@@ -4,63 +4,47 @@ import { CreateUserRequestDom, UpdateUserRequestDom } from "@domain/users/models
 import { UserDom, UserRepository } from "@domain/users";
 import { UserMapper } from "./mapper/user.mapper";
 import { UserDto } from "./dtos/user.dto";
-
+ 
 @injectable()
 export class UserImplRepository implements UserRepository {
-    baseURL: any = "https://jsonplaceholder.typicode.com"
+    baseURL: any = process.env.VITE_BASE_URL
     constructor(
         @inject(HTTP_CLIENT_SYMBOLS.FETCH)
         private readonly httpClient: HttpClient,
     ) {}
    
     async list(): Promise<Result<UserDom[], Failure>> {
-        try {
-            const options = <HttpClientOptions>{
-                path: `${this.baseURL}/users`,
-                removeDefaultHeaders: ['Authorization']
-            };
-            let result = await this.httpClient.get<UserDto[]>(options)
-            return new Right<UserDom[]>(result.data.map(UserMapper.toDom))
-        } catch (error) {
-            return new Left<Failure>(new UnknowFailure(`Unknow error: ${error}`))
-        }
+        const options = <HttpClientOptions>{
+            path:`${this.baseURL}/users`,
+            removeDefaultHeaders: ['Authorization']
+        };
+        let result = await this.httpClient.get<UserDto[]>(options)
+        return result.ok ?  new Right<UserDom[]>(result.data.map(UserMapper.toDom)):  new Left<Failure>(new UnknowFailure(`Unknow error: ${result.error}`))
     }
-
+ 
     async create(request: CreateUserRequestDom): Promise<Result<UserDom, Failure>> {
-        try {
-            const options = <HttpClientOptions>{
-                path: `${this.baseURL}/users`,
-                body: UserMapper.toCreateDto(request),
-            };
-            let result = await this.httpClient.get<UserDto>(options)
-            return new Right<UserDom>(UserMapper.toDom(result.data))
-        } catch (error) {
-            return new Left<Failure>(new UnknowFailure(`Unknow error: ${error}`))
-        }
+        const options = <HttpClientOptions>{
+            path: `${this.baseURL}/users`,
+            body: UserMapper.toCreateDto(request),
+        };
+        let result = await this.httpClient.post<UserDto>(options)
+        return result.ok ?  new Right<UserDom>(UserMapper.toDom(result.data)):  new Left<Failure>(new UnknowFailure(`Unknow error: ${result.error}`))
     }
-
+ 
     async update(request: UpdateUserRequestDom): Promise<Result<UserDom, Failure>> {
-         try {
-            const options = <HttpClientOptions>{
-                path: `${this.baseURL}/users/${request.id}`,
-                body: UserMapper.toUpdateDto(request),
-            };
-            let result = await this.httpClient.put<UserDto>(options)
-            return new Right<UserDom>(UserMapper.toDom(result.data))
-        } catch (error) {
-            return new Left<Failure>(new UnknowFailure(`Unknow error: ${error}`))
-        }
+        const options = <HttpClientOptions>{
+            path: `${this.baseURL}/users/${request.id}`,
+            body: UserMapper.toUpdateDto(request),
+        };
+        let result = await this.httpClient.put<UserDto>(options)
+        return result.ok ?  new Right<UserDom>(UserMapper.toDom(result.data)):  new Left<Failure>(new UnknowFailure(`Unknow error: ${result.error}`))
     }
-    
+   
     async deleteById(id: number): Promise<Result<NoResult, Failure>> {
-         try {
-            const options = <HttpClientOptions>{
-                path: `${this.baseURL}/users/${id}`,
-            };
-            await this.httpClient.delete<void>(options)
-            return new Right<NoResult>(NoResult)
-        } catch (error) {
-            return new Left<Failure>(new UnknowFailure(`Unknow error: ${error}`))
-        }
+        const options = <HttpClientOptions>{
+            path: `${this.baseURL}/users/${id}`,
+        };
+        let result  =await this.httpClient.delete<void>(options)
+        return result.ok ?  new Right<NoResult>(NoResult):  new Left<Failure>(new UnknowFailure(`Unknow error: ${result.error}`))
     }
 }

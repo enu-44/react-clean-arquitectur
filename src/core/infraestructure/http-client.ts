@@ -1,8 +1,8 @@
 import { HttpClientOptions, HttpClientResponse } from "..";
-
+ 
 export interface HttpClient {
-    get<Result = void>(options:HttpClientOptions): Promise<HttpClientResponse<Result>>;
-    post<Result = void>(options: HttpClientOptions): Promise<HttpClientResponse<Result>>;
-    put<Result = void>(options:HttpClientOptions): Promise<HttpClientResponse<Result>>;
-    delete<Result = void>(options:HttpClientOptions): Promise<HttpClientResponse<Result>>;
+    get<Result = void, Error = void>(options:HttpClientOptions): Promise<HttpClientResponse<Result, Error>>;
+    post<Result = void, Error = void>(options: HttpClientOptions): Promise<HttpClientResponse<Result, Error>>;
+    put<Result = void, Error = void>(options:HttpClientOptions): Promise<HttpClientResponse<Result, Error>>;
+    delete<Result = void, Error = void>(options:HttpClientOptions): Promise<HttpClientResponse<Result, Error>>;
 }
