@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { Failure, NoParams, NoResult } from '@core/index';
+import { Failure, NoParams, NoResult, debounce } from '@core/index';
 import { CreateTaskRequestDom, TaskDom } from '@domain/tasks';
 import { AllTasksUseCase, CompleteTaskUseCase, CreateTaskUseCase, DeleteTaskByIdUseCase, SearchTasksUseCase } from '@application/task';
+import { UserDom } from '@domain/users';
  
 function useTask(
     allTasksUseCase: AllTasksUseCase,
@@ -13,16 +14,32 @@ function useTask(
     const [tasks, setTasks] = useState<TaskDom[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<boolean>(false);
+
+    const loadOptions = (
+        inputValue: string,
+        callback: (options: UserDom[]) => void
+    ) => {
+        debouncedSearch(inputValue,callback)
+    };
+
+    const debouncedSearch = debounce(async (inputValue: string, callback: (options: UserDom[]) => void) => {
+        const result= await onSearchUser(inputValue)
+        callback(result)
+    }, 500);
+    
  
     React.useEffect(() => {
         allTasks()
     }, [allTasksUseCase])
- 
-    const searchTasks = async (query: string) => {
+
+    const debouncedQuery = debounce(async (query: string) => {
+        console.log("QUERY", query)
         const result = await searchTaskssUseCase?.execute(query)
         result.fold((data: TaskDom[]) => setTasks(data), (_: Failure) => setError(true))
-    };
- 
+    }, 500);
+    
+    const searchTasks = async (query: string) => debouncedQuery(query)
+
     const allTasks = async () => {
         setLoading(true)
         const result = await allTasksUseCase?.execute(NoParams)
